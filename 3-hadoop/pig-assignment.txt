@@ -1,0 +1,92 @@
+Problem Statement:
+The US Department of Transportation’s (DOT) Bureau of Transportation Statistics (BTS) tracks the on-time performance of domestic flights operated by large air carriers. Summary information on the number of on-time, delayed, canceled, and diverted flights appears in DOT’s monthly Air Travel Consumer Report, published about 30 days after the month’s end.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Loading the flights details data
+
+flights_details = load 'flights_details.csv'using PigStorage(',') as (Row:Int, Year:Int, Month:Int, DayofMonth:Int, DayOfWeek:Int, DepTime:Int, CRSDepTime:Int, ArrTime:Int, CRSArrTime:Int, UniqueCarrier:charArray, FlightNum:Int, TailNum:charArray, ActualElapsedTime:Int, CRSElapsedTime:Int, AirTime:Int, ArrDelay:Int, DepDelay:Int, Origin:charArray, Dest:charArray, Distance:Int, TaxiIn:Int, TaxiOut:Int, Canceled:Int, CancellationCode:charArray, Diverted:Int, CarrierDelay:Int, WeatherDelay:Int, NASDelay:Int, SecurityDelay:Int, LateAircraftDelay:Int);
+dump flights_details;
+
+## Loading the flights details data
+airports = load 'airports.csv'using PigStorage(',') as (Iata:charArray, AirportName:charArray, City:charArray, State:charArray, Country:charArray, Lat:Float, Long:Float);
+dump airports;
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Tasks To Be Performed:
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+● Find out the top five most visited destinations.
+
+group_dest = GROUP flights_details BY Dest; 
+count_dest = FOREACH group_dest GENERATE group AS Dest, COUNT(flights_details) AS RowCount;
+order_dest = ORDER count_dest BY RowCount DESC;
+top_dest = LIMIT order_dest 5;
+dump top_dest;
+
+Solution:
+(LAS,93)
+(MDW,79)
+(PHX,78)
+(BWI,65)
+(OAK,62)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+● Which month has seen the greatest number of cancellations due to bad weather?
+
+filter_weather = FILTER flights_details BY Canceled == 1 AND CancellationCode == 'B';
+group_month = GROUP filter_weather BY Month; 
+count_month = FOREACH group_month GENERATE group AS Month, COUNT($1) AS RowCount;
+order_month = ORDER count_month BY RowCount DESC;
+most_cncld_month = LIMIT order_month 1;
+dump most_cncld_month;
+
+Solution:
+(1,60) # January
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+● Find out the top ten origins with the highest AVG departure delay.
+
+group_origin = GROUP flights_details BY Origin; 
+avg_depdelay_by_origin = FOREACH group_origin GENERATE group AS Origin, AVG(flights_details.DepDelay) AS AvgDepDelay;
+order_depdelay_by_origin = ORDER avg_depdelay_by_origin BY AvgDepDelay DESC;
+top_dep_delay_by_origin = LIMIT order_depdelay_by_origin 10;
+dump top_dep_delay_by_origin;
+
+Solution:
+(JAN,87.6)
+(MAF,63.625)
+(OMA,49.1)
+(MDW,48.950980392156865)
+(RSW,43.6)
+(MHT,42.407407407407405)
+(SAN,42.361111111111114)
+(LAS,41.830601092896174)
+(OAK,41.294117647058826)
+(LAX,39.797872340425535)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+● Which route (origin and destination) has seen the maximum diversion?
+
+filter_diversion = FILTER flights_details BY Diverted == 1;
+group_route = GROUP filter_diversion BY (Origin, Dest); 
+count_route = FOREACH group_route GENERATE FLATTEN(group) AS (Origin, Dest), COUNT($1) AS RowCount;
+order_route = ORDER count_route BY RowCount DESC;
+most_diverted_route = LIMIT order_route 1;
+dump most_diverted_route;
+
+Solution:
+(MCO,BWI,6)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
