@@ -1,0 +1,24 @@
+#Problem Statement:
+
+#You work as a Big Data Engineer at GrapeVine Pvt. Ltd. Your company is organizing its Hadoop cluster in preparation for upcoming tasks. You have been assigned certain tasks for the fulfillment of this activity.
+
+#Tasks To Be Performed:
+#1. Create a directory in your cluster
+
+hadoop fs -mkdir /new_dir/new_sub_dir
+
+#2. Create three text files and upload them to the newly created directory in the Hadoop cluster
+
+# Create 3 text files
+touch my_file1.txt 
+touch my_file2.txt 
+touch my_file3.txt
+
+# Upload them to the newly created directory on HDFS 
+hadoop fs -put my_file1.txt /new_dir/new_sub_dir/my_file1.txt
+hadoop fs -put my_file2.txt /new_dir/new_sub_dir/my_file2.txt
+hadoop fs -put my_file3.txt /new_dir/new_sub_dir/my_file3.txt
+
+#3. Download one of these text files to your local directory from the cluster
+
+hadoop fs -get /new_dir/new_sub_dir/my_file3.txt /Downloads
