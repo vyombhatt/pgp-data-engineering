@@ -1,4 +1,4 @@
-'''
+:<< 'COMMENT'
 Based on what you have learnt in the class, do the following steps:
     ● Create a new folder
     ● Put the following files in the folder
@@ -10,7 +10,7 @@ Based on what you have learnt in the class, do the following steps:
     ● And finally push them to github
 
 Please share the commands for the above points.
-'''
+COMMENT
 
 # Create a new folder
 mkdir Data
