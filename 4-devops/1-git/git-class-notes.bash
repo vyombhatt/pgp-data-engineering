@@ -17,7 +17,7 @@ cd gitdemo/
 ls -al
 
 # Add git credentials to config - any commits made will be assigned to this name
-git config --global user.name "Vyom Bhatt"
+git config --global user.name "username"
 git config --global user.email "git_email@example.com"
 git config --list # check the config added
 
