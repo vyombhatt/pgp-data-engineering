@@ -187,14 +187,27 @@ vi demo1.yml
      name: nginx    # provide details to the module defined above
      state: started    
 
- demo1.yml# Press [CTRL]+[c] and type :wq! to save and exit the editor
+ demo1.yml # Press [CTRL]+[c] and type :wq! to save and exit the editor
 
 # running the playbook
 ansible-playbook demo1.yml --syntax-check   # code to check for syntax error
 ansible-playbook demo1.yml --check          # dry run or trial of the code on terminal and not the server
 ansible-playbook demo1.yml                  # final run of playbook on the server
 
-###
+#####################################################################################
+# Ansible Roles
+#####################################################################################
+
 # Ansible has another aspect called Ansible Roles.
 # Ansible Roles are used for reusability purposes. Roles (like playbooks) can be created to reuse ansible codes.
 
+# Creating a new role
+sudo ansible-galaxy init /etc/ansible/roles/nginxrole 
+# ansible-galaxy init {role-path-with-name}
+
+# The above command will create a role, with a default folder structure
+# Role can be accessed in ansible dir
+cd /etc/ansible/roles
+# We mainly focus in the tasks folder inside the role
+
+# For the rest of the steps on operating playbooks, refer to word docs with assignment submissions

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  demomservice:
+    image: nginx
+    ports:
+      - "8087:80"
+  demoservice2:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password

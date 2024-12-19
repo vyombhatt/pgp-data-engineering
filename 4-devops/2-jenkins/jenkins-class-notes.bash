@@ -23,7 +23,6 @@
 # Other tools like Jenkins:
 # Gitlabs, Github Actions, Concourse, CircleCI, Bitbucket Pipelines
 
-
 # Use this link to install Jenkins on AWS: https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
 
 # Starting Jenkins on AWS EC2
@@ -37,6 +36,7 @@ sudo yum update -y
 
 # Install Java 11
 sudo dnf install java-11-amazon-corretto -y
+sudo dnf install java-17-amazon-corretto -y # java 11 was causing problems during assignment
 
 # copy the Jenkins repo
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo

@@ -195,9 +195,85 @@ services:
 4. **Scaling Applications**:
    - Containers can be replicated to meet increasing demand.
 
+---
 
 ## Volume Mounting in Docker
 Volume mounting in Docker refers to attaching storage (called **volumes**) to a Docker container so that data can be shared between the container and the host or persist beyond the lifecycle of the container. This is a key feature for managing stateful applications in Docker.
+
+---
+
+## Docker Networks
+
+Docker provides several types of networks that you can use to manage communication between containers and the outside world. Each network type serves different purposes, allowing flexibility in how containers connect and communicate.
+
+---
+
+### 1. Bridge Network (Default)
+
+- **Description**:  
+  The default network for containers when no specific network is specified. Containers on the same bridge network can communicate with each other using their container names as hostnames.
+- **Use Case**:  
+  Suitable for standalone containers needing simple container-to-container communication on the same host.
+
+- **Key Points**:
+  - Docker creates a `bridge` network named `bridge` by default.
+  - Containers on the bridge network cannot connect to external networks without explicit port forwarding.
+
+- **Command to List Bridge Networks**:
+  ```bash
+  docker network ls 
+  ```
+
+### 2. Host Network
+
+- **Description**:
+   Shares the host's networking stack with the container. The container does not get its own IP address; it uses the host's IP and ports.
+
+- **Use Case**:
+   Useful when performance is critical, and containerized applications need direct access to the host network. Ideal for applications where you don't want network isolation.
+
+- **Key Points**:
+
+   - No port mapping is required because the container uses the host's ports.
+   - No isolation between the container and the host network.
+
+- **Example Command**:
+
+   ```bash
+   docker run --network host <image>
+   ```
+
+### 3. None Network
+
+- **Description**:
+   The container has no network interface other than a loopback device.
+
+- **Use Case**:
+   Useful for security-focused setups where network access is not required.
+
+- **Key Points**:
+
+   - No communication with other containers or external networks.
+   - Only a local loopback interface (127.0.0.1) is available.
+
+- **Example Command**:
+
+   ```bash
+   docker run --network none <image>
+   ```
+
+### Summary of all Docker Networks Types
+
+
+| **Network Type** | **Description**                     | **Use Case**                                  |
+|-------------------|-------------------------------------|-----------------------------------------------|
+| **Bridge**        | Default network, isolated.         | Standalone containers on the same host.       |
+| **Host**          | Uses host’s network stack.         | Performance-critical applications.           |
+| **None**          | No network, only loopback.         | Highly secure, no external access.           |
+| **Overlay**       | Multi-host communication.          | Distributed applications (Swarm/Kubernetes). |
+| **Macvlan**       | Direct access to physical network. | Legacy applications requiring unique MACs.   |
+| **Custom**        | User-defined networks.             | Fine-grained control over container comms.   |
+
 
 ---
 

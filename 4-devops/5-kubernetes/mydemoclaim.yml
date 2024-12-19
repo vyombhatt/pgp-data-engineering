@@ -1,0 +1,16 @@
+--- # Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mydemoclaim # Define name of the PVC
+  labels:
+    type: mypvc
+spec:
+  accessModes: # this access mode has to be the same as what was defined in Persistent Volume
+  - ReadWriteMany
+  resources: # here we mention the amount of storage we want to claim
+    requests:
+      storage: 1Gi
+  selector: # here we mention the label of the PV from where we want to establish the claim
+    matchLabels:
+      type: mypv

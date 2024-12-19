@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: mydeploy # name of deployment
+    # for kind: Deployment, we don't provide label here like pods
+spec:
+  replicas: 3 # Since we chose kind: Deployment, replicas will define number of pods 
+  selector: # the selector acts as a filter to choose which pods to build from all that are provided in the template
+    matchLabels:
+      app: mydemoapp # This is where we define the label, the selector will match this label with all labels in template for selecting
+  template:
+    metadata:
+      labels:
+        app: mydemoapp # This label will have to match the label above so that selector can match this
+    spec:
+      containers: # all the containers information will be present here
+      - name: mydemocontainer # give the containers a name
+        image: nginx
+        volumeMounts: # define a volume mount for this deployment
+        - name: mydemoappvol # give it a name of your choice
+          mountPath: /var/www/html/ # provide the location in the pod where we want the volume to be created
+      volumes:
+      - name: mydemoappvol # the name defined above should match this, as it will look for the defined volume in this section
+        persistentVolumeClaim:
+          claimName: mydemoclaim # provide the label of the PVC that was created
+
+--- # This allows us to segregate the above kind with another kind
+apiVersion: v1
+kind: Service # defining a service
+metadata:
+  name: mydemoservice 
+spec:
+  selector:
+    app: mydemoapp # give same label given to the deployment, this will assign the service to the pod 
+  type: NodePort # by default it will give ClusterIP service
+  ports:
+  - protocol: TCP
+    port: 80 # this is the internal port number for the pod. Since we are using nginx, it is 80
+    targetport: 80 # this is the port number on the virtual machine, can be any number
+
+--- # LoadBalancer Service
+apiVersion: v1
+kind: Service # defining a service
+metadata:
+  name: mydemoservice 
+spec:
+  selector:
+    app: mydemoapp # give same label given to the deployment, this will assign the service to the pod 
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80 # this is the internal port number for the pod. Since we are using nginx, it is 80
+    targetport: 80 # this is the port number on the virtual machine, can be any number
+
+--- # ClusterIP Service
+apiVersion: v1
+kind: Service # defining a service
+metadata:
+  name: mydemoservice 
+spec:
+  selector:
+    app: mydemoapp # give same label given to the deployment, this will assign the service to the pod 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80 # this is the internal port number for the pod. Since we are using nginx, it is 80
+    targetport: 80 # this is the port number on the virtual machine, can be any number
+
+--- # externalName Service
+apiVersion: v1
+kind: Service # defining a service
+metadata:
+  name: mydemoservice 
+spec:
+  selector:
+    app: mydemoapp # give same label given to the deployment, this will assign the service to the pod 
+  externalName: example.com # you need a valid dns server to put the url here
+  ports:
+  - protocol: TCP
+    port: 80 # this is the internal port number for the pod. Since we are using nginx, it is 80
+    targetport: 80 # this is the port number on the virtual machine, can be any number

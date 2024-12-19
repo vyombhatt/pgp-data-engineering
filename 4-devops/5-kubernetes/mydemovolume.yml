@@ -1,0 +1,14 @@
+--- # Persistent Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mydemovol
+  labels:
+    type: mypv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes: # refer to meaning of access modes in .md notes
+  - ReadWriteMany
+  hostPath:
+    path: /tmp/mydata

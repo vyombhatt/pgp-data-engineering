@@ -35,7 +35,10 @@ sudo docker run hello-world # run hello-world image, this is a test image from d
 # having done the above step, we no longer need sudo to run docker
 
 
-## Running Docker
+#####################################################################################
+# Running docker 
+#####################################################################################
+
 # Docker can be run using different modes
 # 1. running in detach mode - the docker runs in background and we don't log into it
 docker run -itd --name mydockercontainer nginx
@@ -73,7 +76,10 @@ docker logs {container_id} # lists logs of a container
 docker inspect {container_id} # gives additional details about a container
 
 
-## Exposing docker containers
+#####################################################################################
+# Exposing Docker Containers 
+#####################################################################################
+
 # There are 2 main methods of exposing your docker contiainer to others
 # 1. Port forwarding (denoted by -P)
 # Docker has a default range of limited ports numbers that we can use for forwarding
@@ -101,7 +107,10 @@ docker run -d -p 8001:80 # creates a docker container with Binding port
 # In the browser, enter {ec2 public}:{binding port} e.g. 65.0.110.1:8001
 
 
-## Volumes
+#####################################################################################
+# Volumes 
+#####################################################################################
+
 # Volume mounting in refers to attaching storage (called volumes) to a Docker container 
 # so that data can be shared between the container and the host. 
 # This is like creating a backup of the data in a container so it is not lost if container is deleted
@@ -117,4 +126,86 @@ docker run -d -v mydemovol:/tmp nginx # creates docker container with volume mou
 docker ps # lists all active containers
 docker exec -it (container_id) # enter the container
 ls -al # check all the files in the container
+
+
+#####################################################################################
+# Docker Networks 
+#####################################################################################
+
+# There are 3 types of networks that can be used in dockers:
+# 1. Bridge - this is the default network
+# 2. Host
+# 3. Null - no network
+
+# creating a new network
+docker network create mydemonetwork
+docker network ls # lists all networks
+
+# create a new container and assigning a specific network to it
+docker run -d --network=mydemonetwork nginx 
+# updating the network of a running container
+docker network connect {network-name} {container-id}
+# removing a network from a running container
+docker network disconnect {network-name} {container-id}
+
+# The benefit of using networks is that it allows you to assign a IPs within a specific range to containers
+
+# deleting a network
+docker network rm mydemonetwork
+
+#####################################################################################
+# Dockerfile 
+#####################################################################################
+
+# Dockerfile commands or directives
+# it's recommended that these commands are written in uppercase
+
+FROM # command that tells docker which base image to use 
+LABEL # command to add metadata to docker image, not mandatory
+RUN # command to run tasks in the container e.g. RUN pip install && yum install
+COPY # copying something into the docker container e.d. COPY app.py/APP
+ADD  # similar to copy, but it additionally unzips/uncompresses the files
+WORKDIR # command to set working directory in container
+EXPOSE # command that allows to open ports that are internal to the container, since some apps need open ports
+CMD # command allows to pass commands for default execution e.g. CMD ["python","app.py"] 
+ENV # command to define environmental variables
+ENTRYPOINT # similar to CMD. Difference is that once entrypoint is set, it can't be changed during container execution
+VOLUME # specify a directory in docker for volume mounting
+USER # specify user that w  ill execute docker commands in container, default: root user
+ONBUILD # commands that trigger when docker image is built
+
+#####################################################################################
+# Docker Compose 
+#####################################################################################
+
+# Docker compose is a yaml based configuration file that allows you to run multiple docker images
+
+# To download and install docker compose
+curl -SL https://github.com/docker/compose/releases/download/v2.30.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+# Apply executable permissions to the standalone binary in the target path given above
+sudo chmod +x /usr/local/bin/docker-compose
+# Executing compose commands
+docker -compose
+
+# Create a docker compose yml file, can give it any name
+vi docker-compose.yml
+
+# Running the file
+docker-compose up # this will look for any file with yml syntax and check if it's a compose file, and executes it
+docker-compose up -f docker-compose.yml # you can specify yml file name
+# We can define multiple images in the compose file
+# See docker-compose.yml file for structure
+
+docker-compose down # removes all containers created through the compose file
+
+
+#####################################################################################
+# Docker Swarm 
+#####################################################################################
+
+# these are group of servers working together that helps manage multiple containers
+# Swarms help managing/orchestrating many containers together
+# This is a substitute of kubernetes, though not as commonly used as kubernetes
+
+# There should be atleast 2 or more servers to form a cluster of docker swarm
 
