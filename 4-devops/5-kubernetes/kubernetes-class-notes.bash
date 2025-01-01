@@ -24,7 +24,7 @@ sudo chmod +x kubernetes.sh # make the kubernetes.sh file an executable by givin
 # Repeat the above commands in slave machine too
 
 # Now we start creating the kubernetes cluster only in the master
-sudo kubeadm init --pod-network-cidr=192.168.0.0/10 --apiserver-advertise-address=172.31.9.106 --cri-socket unix:///var/run/cri-dockerd.sock
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.9.106 --cri-socket unix:///var/run/cri-dockerd.sock
 # sudo kubeadm init - initializes kubernetes control plane on this machine, making it the master node 
 # --pod-network-cidr=192.168.0.0/10 - Specifies the CIDR (Classless Inter-Domain Routing) range for the pod network
     # The pod network allows communication between pods within the cluster.
@@ -41,6 +41,9 @@ sudo kubeadm init --pod-network-cidr=192.168.0.0/10 --apiserver-advertise-addres
 sudo kubeadm join 172.31.46.136:6443 --token zosaya.qyjr52z1sozr98vu \
     --discovery-token-ca-cert-hash sha256:efb479447ded2971730468cba9ae8de0af204fc7e471b513e33b7387de80d004 \
     --cri-socket unix:///var/run/cri-dockerd.sock # this socket option needs to be added, same as the master
+
+sudo kubeadm join 172.31.34.62:6443 --token 9lgeqo.yeiqjaoy8hgi2mdn \
+        --discovery-token-ca-cert-hash sha256:11bb8e8168f8d1f060a9d1d74ab532515079fec2e7a1c448d33d2369db8224b4 --cri-socket unix:///var/run/cri-dockerd.sock
 
 # sudo kubeadm join - join command connects a node to an existing kubernetes cluster
 # 172.31.46.136:6443 - Specifies the IP address (172.31.46.136) and port (default is 6443) of the API server on the control plane node
@@ -62,7 +65,7 @@ mkdir -p $HOME/.kube # creates empty directory .kube
 ls -al
 
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config # copies admin.conf into a new file config in new location
-sudo chmown $(id -u):$(id -g) $HOME/.kube/config # provides permission to the config file 
+sudo chown $(id -u):$(id -g) $HOME/.kube/config # provides permission to the config file 
 
 # Now you will be allowed to run kubectl
 kubectl get nodes # lists all nodes in cluster
@@ -314,6 +317,6 @@ sudo vi demohelm.yml
 helm install mydemohelm bitnami/nginx -f demohelm.yml
 
 helm list # shows details of all helm charts installed
-kubectl get pods # the defined pods in teh helm chart will have been created
+kubectl get pods # the defined pods in the helm chart will have been created
 
 helm uninstall mydemohelm # this will uninstall the helm chart, and remove all resources created by it too

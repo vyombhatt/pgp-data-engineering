@@ -57,7 +57,7 @@ A kubernetes cluster should have at least 3 nodes: 1 master and 2 nodes.
    - It ensures that traffic to services is correctly routed to the appropriate pods, maintaining network connectivity and load balancing.
 
 3. **Container Runtime**:
-   - Software that enables running of containers (e.g., Crisocket, containerd, CRI-O, Docker).
+   - Software that holds pods which encapsulate containers, and also enables running of these containers (e.g., Crisocket, containerd, CRI-O, Docker).
    - It provides the necessary tools for pulling container images, starting and stopping containers, and managing their lifecycle. The container runtime interfaces with the underlying operating system to execute containers in a consistent, isolated environment.
 
 ---
@@ -163,15 +163,7 @@ Kubernetes networking enables communication between different components in a Ku
 
 2. **Service Networking**
    - Provides stable endpoints for accessing groups of pods.
-
-   - **Types of services**:
-     - **ClusterIP**: Default type, accessible only within the cluster.
-
-     - **NodePort**: Exposes a service on a static port on each node's IP.
-
-     - **LoadBalancer**: Provisions a cloud load balancer to expose the service externally.
-
-     - **ExternalName**: Maps a service to an external DNS name.
+   - Types of services discussed above
 
 3. **DNS**
    - Kubernetes automatically creates DNS records for each service.
@@ -331,8 +323,6 @@ Helm is a powerful tool for managing Kubernetes applications. By using Helm Char
 
 ## 9. Kubernetes Deployment Methods
 
-# Tools to Run Kubernetes
-
 | **Category**                    | **Tool**                       | **Description**                                                                                                                                      | **Supported Platforms**       | **Use Case**                                                                                      |
 |----------------------------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|--------------------------------------------------------------------------------------------------|
 | **Local Development Tools**      | **Minikube**                   | Creates a local single-node Kubernetes cluster in a VM or container.                                                                                | Linux, macOS, Windows          | Local development, testing, learning Kubernetes.                                                  |
@@ -352,3 +342,53 @@ Helm is a powerful tool for managing Kubernetes applications. By using Helm Char
 |                                  | **Helm**                       | Kubernetes package manager that simplifies deploying applications and clusters using Helm charts.                                                  | Any Kubernetes cluster         | Managing complex Kubernetes applications using charts.                                           |
 
 ---
+
+## 10. Kubernetes vs. Docker (Benefits of Kubernetes)
+
+Kubernetes and Docker are two essential technologies in modern containerized application development and deployment. However, they serve different purposes and are not direct competitors.
+
+| **Aspect**                | **Kubernetes**                                                                                             | **Docker**                                                                                           |
+|---------------------------|-----------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| **Definition**            | Kubernetes is an orchestration platform for managing containers at scale, automating deployment, scaling, and operations. | Docker is a containerization platform that allows developers to build, ship, and run applications in containers. |
+| **Role**            | Manages containerized applications across multiple hosts, providing high availability and scalability. | Focuses on creating and running containers on a single host. |
+| **Primary Goal**          | To manage, schedule, and orchestrate containers efficiently across a cluster of machines.                 | To package and run applications in isolated environments (containers).                              |
+| **Cluster Management**    | Supports managing containers across multiple nodes in a cluster.                                          | Docker Swarm provides basic cluster management, but Docker itself operates on a single host.        |
+| **Architecture**          | Includes Master Node (API server, scheduler, controller manager, etc.) and Worker Nodes (kubelet, kube-proxy). | Runs Docker Engine on a single host, managing containers locally.                                   |
+| **Container Runtime**     | Supports multiple runtimes (e.g., Docker, containerd, CRI-O).                                             | Uses its own runtime, Docker Engine.                                                                |
+| **Scaling**               | Automatically scales containers horizontally based on resource usage or custom metrics.                  | Requires manual scaling (or Docker Swarm for basic scaling).                                        |
+| **Cluster Size**          | Built for large-scale distributed systems, managing thousands of containers.                             | Primarily designed for local development or small-scale deployments.                                |
+| **Service Discovery**     | Built-in service discovery and load balancing via Services.                                              | Uses container DNS and user-defined networking but lacks advanced service discovery features.       |
+| **Declarative Approach**  | Uses YAML manifests to declare the desired state of the cluster (e.g., number of replicas, services).     | Docker Compose provides declarative multi-container deployments, but it’s less powerful.            |
+| **Self-Healing**          | Automatically restarts failed containers and maintains the desired state.                               | Does not provide self-healing; requires manual intervention.                                        |
+| **Use Case: Development** | Supports development environments but has a more complex setup.                                         | Excellent for local development and testing on a developer’s machine.                               |
+| **Complementary Nature**  | Often used to orchestrate Docker containers in production.                                              | Primarily used for building and running containers, then combined with Kubernetes for orchestration.|
+| **Small Projects**        | Overkill for simple projects.                                                                          | Ideal for small-scale applications or local development.                                            |
+| **Large-Scale Deployment**| Essential for managing, scaling, and automating containerized applications in production.               | Limited to Docker Swarm or other orchestration tools for scaling.                                   |
+
+---
+
+## 11. Summary of how Kubernetes runs an application
+
+### 1. Pods and ReplicaSet
+- **Pods**: The smallest deployable units in Kubernetes, running containers. In case you want to deploy a docker container, you can pass the docker image to a deployment file which in turn will create a pod that will be used to run the conatiner.
+- **ReplicaSet**: Ensures a specific number of replicas of a pod are running at all times. A **Deployment** manages the ReplicaSet, ensuring the desired number of pods i.e. the number of replicas required are defined in the deployment file.
+
+### 2. Role of Master and Worker Nodes
+- **Master Node**: Manages the cluster's control plane, including components like the API server, scheduler, and etcd. It does **not** run application pods by default but coordinates pod placement and ensures the system is functioning.
+- **Worker Nodes**: Run the actual **application pods** and containers. These nodes execute workloads that the master node schedules.
+
+### 3. Pod Scheduling
+- When you create a ReplicaSet or Deployment, the **Kubernetes scheduler** on the master node determines which **worker nodes** should run the pods based on available resources, affinity rules, and other factors.
+- The **replicas** are distributed across the worker nodes for **high availability** and **fault tolerance**.
+
+### 4. Scaling and Distribution
+- Kubernetes ensures the requested number of replicas (e.g., 3) are running across available worker nodes. If a pod fails or a node goes down, Kubernetes automatically reschedules the pod to another available worker node.
+- You can control pod placement with **affinity**, **anti-affinity**, **node selectors**, and **taints/tolerations**.
+
+### 5. Fault Tolerance and Load Balancing
+- Spreading replicas across worker nodes ensures **fault tolerance**—if one node fails, other replicas continue running on different nodes.
+- Kubernetes provides **load balancing** to distribute traffic across multiple replicas.
+
+### 6. Self-Healing
+- Kubernetes ensures that the desired number of replicas is always maintained. If a pod crashes, it is automatically replaced by the ReplicaSet.
+
