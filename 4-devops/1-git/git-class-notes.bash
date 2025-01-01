@@ -118,7 +118,7 @@ git reset --mixed {commit-id} # undoes the commit, but moves the untracked files
 # Here we use PAT
 # On Github, Settings -> Developer Settings -> Personal Access Tokens -> Token (classic)
 # Enter details, select admin privileges, generate the token ID and save the token ID
-# token ID: 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
+# token ID: 
 
 # Firstly we need to change the base branch of our ec2 system from "master" to "main"
 # This is because the base branch on github is called "main"
